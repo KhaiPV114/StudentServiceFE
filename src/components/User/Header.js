@@ -12,31 +12,22 @@ const Header = () => {
   };
 
   return (
-    <Navbar expand="lg" style={{ backgroundColor: '#FFA401' }} className="shadow-sm">
-      <Container >
-        {/* <Navbar.Brand
-          href="/"
-          className="fw-bold text-white"
-          style={{ fontSize: '1.5rem' }}
-        >
-          Student Service
-        </Navbar.Brand> */}
-        <Navbar.Toggle aria-controls="main-navbar" />
-        <Navbar.Collapse id="main-navbar">
-          {/* <Nav className="me-auto">
-            <Nav.Link href="/" className="text-white">Home</Nav.Link>
-            <Nav.Link href="/services" className="text-white">Services</Nav.Link>
-            <Nav.Link href="/contact" className="text-white">Contact</Nav.Link>
-          </Nav> */}
+    <Navbar bg="light" expand="lg" className="px-3">
+      <Container fluid>
+        {/* Logo gần sidebar */}
+        <Navbar.Brand href="/" className="me-auto fw-bold">
+          Student Portal
+        </Navbar.Brand>
+
+        {/* Nút toggle (mobile) */}
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+        {/* Guest nằm sát phải */}
+        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Nav>
-            <NavDropdown
-              title={<span className="text-white">{user.name}</span>}
-              id="user-dropdown"
-              align="end"
-            >
-              <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
+            <NavDropdown title="Guest" id="basic-nav-dropdown" align="end">
+              <NavDropdown.Item href="login">Login</NavDropdown.Item>
+              <NavDropdown.Item href="register">Register</NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
