@@ -1,8 +1,8 @@
 // src/pages/Homepage.js
 import React, { useState } from "react";
-import Header from "../components/User/Header";
-import Footer from "../components/User/Footer";
-import Sidebar from "../components/User/Sidebar";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Sidebar from "../components/Sidebar";
 import Profile from "../components/User/Profile";
 import Service from "../components/User/Service";
 import { Container, Row } from "react-bootstrap";

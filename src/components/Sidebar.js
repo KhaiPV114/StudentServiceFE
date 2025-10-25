@@ -1,8 +1,18 @@
-// src/components/User/Sidebar.js
+// src/components/Sidebar.js
 import React, { useState } from "react";
-import { FaHome, FaUser, FaBook, FaEnvelope, FaBars } from "react-icons/fa";
+import {
+  FaHome,
+  FaUser,
+  FaBook,
+  FaEnvelope,
+  FaBars,
+  FaUsers,
+  FaChartBar,
+  FaClipboardList,
+  FaTools,
+} from "react-icons/fa";
 
-const Sidebar = ({ onToggle, onSelect }) => {
+const Sidebar = ({ onToggle, onSelect, role = "user" }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [active, setActive] = useState("home");
 
@@ -12,13 +22,35 @@ const Sidebar = ({ onToggle, onSelect }) => {
     if (onToggle) onToggle(newState);
   };
 
-  const menuItems = [
-    { key: "home", name: "Home", icon: <FaHome /> },
-    { key: "profile", name: "Profile", icon: <FaUser /> },
-    { key: "service", name: "Services", icon: <FaBook /> },
-    { key: "Contact", name: "Contact", icon: <FaEnvelope /> },
-  ];
+  // ------------------------------
+  // 💡 Menu tùy theo vai trò
+  // ------------------------------
+  const menus = {
+    user: [
+      { key: "home", name: "Home", icon: <FaHome /> },
+      { key: "profile", name: "Profile", icon: <FaUser /> },
+      { key: "service", name: "Services", icon: <FaBook /> },
+      { key: "contact", name: "Contact", icon: <FaEnvelope /> },
+    ],
+    staff: [
+      { key: "dashboard", name: "Trang chủ", icon: <FaHome /> },
+      { key: "requests", name: "Quản lý yêu cầu", icon: <FaClipboardList /> },
+      { key: "resources", name: "Quản lý tài nguyên", icon: <FaTools /> },
+      { key: "processing", name: "Xử lý yêu cầu", icon: <FaBook /> },
+    ],
+    admin: [
+      { key: "dashboard", name: "Dashboard", icon: <FaChartBar /> },
+      { key: "users", name: "Quản lý người dùng", icon: <FaUsers /> },
+      { key: "reports", name: "Báo cáo & Thống kê", icon: <FaClipboardList /> },
+      { key: "system", name: "Thông báo hệ thống", icon: <FaEnvelope /> },
+    ],
+  };
 
+  const menuItems = menus[role] || menus.user;
+
+  // ------------------------------
+  // 💅 UI
+  // ------------------------------
   return (
     <div
       style={{
@@ -40,11 +72,24 @@ const Sidebar = ({ onToggle, onSelect }) => {
       <div
         className="d-flex align-items-center justify-content-between p-3 border-bottom"
         style={{
-          background: "linear-gradient(90deg, #FF8008, #FFC837)",
+          background:
+            role === "admin"
+              ? "linear-gradient(90deg, #FF8008, #FFC837)"
+              : role === "staff"
+              ? "linear-gradient(90deg, #FF8008, #FFC837)"
+              : "linear-gradient(90deg, #FF8008, #FFC837)",
           color: "white",
         }}
       >
-        {isOpen && <h5 className="fw-bold m-0">Homepage</h5>}
+        {isOpen && (
+          <h5 className="fw-bold m-0">
+            {role === "admin"
+              ? "Quản trị viên"
+              : role === "staff"
+              ? "Nhân viên"
+              : "Homepage"}
+          </h5>
+        )}
         <FaBars
           style={{ cursor: "pointer", fontSize: "20px", color: "white" }}
           onClick={toggleSidebar}
