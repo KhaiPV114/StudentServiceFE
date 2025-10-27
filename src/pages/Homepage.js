@@ -90,7 +90,7 @@ const Homepage = () => {
                 cursor: "pointer",
                 transition: "transform 0.2s ease",
               }}
-              onClick={() => navigate("/events-clubs")}
+              onClick={() => navigate("/room-booking")}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
@@ -150,7 +150,7 @@ const Homepage = () => {
                 cursor: "pointer",
                 transition: "transform 0.2s ease",
               }}
-              onClick={() => navigate("/staff")}
+              onClick={() => navigate("/notifications")}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
