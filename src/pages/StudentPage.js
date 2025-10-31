@@ -2,18 +2,59 @@ import React from "react";
 import { Container, Row, Col, Button, Card } from "react-bootstrap";
 import { Calendar, Bell, ClipboardCheck, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import  { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Sidebar from "../components/Sidebar";
+import Profile from "../components/User/Profile";
+import UserFeedback from "../components/User/UserFeedback";
 
-const Homepage = () => {
+import ServiceBooking from "../components/User/Booking";
+import EventsClubs from "../components/User/EventsAndClub";
+import EquipmentBorrowing from "../components/User/EquipmentLoan";
+import HelpDesk from "../components/User/Helpdesk";
+
+const StudentPage = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState("home");
+
   const navigate = useNavigate();
 
-  return (
-    <div style={{ backgroundColor: "#FAFAFA", minHeight: "100vh" }}>
-      {/* HEADER */}
-      <Header />
+  const renderContent = () => {
+    switch (activeTab) {
+      case "profile":
+        return <Profile />;
+      case "booking":
+        return <ServiceBooking />;
+      case "events":
+        return <EventsClubs />;
+      case "equipment":
+        return <EquipmentBorrowing />;
+      case "helpdesk":
+        return <HelpDesk />;
+      case "feedback":
+        return <UserFeedback />;
+      default:
+        return (
+          <div
+            style={{
+              background: "linear-gradient(90deg, #FF8008, #FFC837)",
+              color: "white",
+              padding: "2rem",
+              borderRadius: "12px",
+              textAlign: "center",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+            }}
+          >
+            <h1>Chào mừng đến với cổng thông tin sinh viên</h1>
+            <p>Quản lý hoạt động học tập và dịch vụ của bạn</p>
+          </div>
+        );
+    }
+  };
 
-      {/* HERO SECTION */}
+  return (
+    <>
       <div
         style={{
           background: "linear-gradient(to right, #FF7A00 70%, #00B894 30%)",
@@ -162,8 +203,8 @@ const Homepage = () => {
       </Container>
 
       <Footer />
-    </div>
+    </>
   );
 };
 
-export default Homepage;
+export default StudentPage;

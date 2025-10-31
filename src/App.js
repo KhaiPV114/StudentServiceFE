@@ -1,6 +1,6 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Login from "./pages/Login";
-import Homepage from "./pages/Homepage";
+import Homepage from "./pages/StudentPage";
 import "./Style/theme.css";
 import AdminPage from "./pages/AdminPage";
 import StaffPage from "./pages/StaffPage";

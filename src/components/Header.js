@@ -1,34 +1,153 @@
-// src/components/UserHeader.jsx
-import React from 'react';
-import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
+import React, { useState, useEffect, useRef } from "react";
+import { Navbar, Nav, Container, NavDropdown, Badge } from "react-bootstrap";
+import { FaBell } from "react-icons/fa";
 
 const Header = () => {
-  // Giả sử user info được lưu trong sessionStorage sau khi login
-  const user = JSON.parse(sessionStorage.getItem('user')) || { name: 'Guest' };
+  const [notifications, setNotifications] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // 👇 Lấy thông tin user (bao gồm role)
+  const user =
+    JSON.parse(sessionStorage.getItem("user")) || {
+      name: "Guest",
+      role: "guest",
+    };
 
   const handleLogout = () => {
     sessionStorage.clear();
-    window.location.href = '/login';
+    window.location.href = "/login";
+  };
+
+  // 📩 Lắng nghe sự kiện thông báo mới
+  useEffect(() => {
+    const handleNewNotification = (event) => {
+      const newNoti = {
+        id: Date.now(),
+        message: event.detail.message,
+        time: "Vừa xong",
+      };
+      setNotifications((prev) => [newNoti, ...prev]);
+    };
+
+    window.addEventListener("new-notification", handleNewNotification);
+    return () =>
+      window.removeEventListener("new-notification", handleNewNotification);
+  }, []);
+
+  // 📤 Tự động đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const removeNotification = (id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
   return (
-    <Navbar bg="light" expand="lg" className="px-3">
+    <Navbar bg="light" expand="lg" className="px-3 shadow-sm sticky-top">
       <Container fluid>
-        {/* Logo gần sidebar */}
-        <Navbar.Brand href="/" className="me-auto fw-bold">
+        <Navbar.Brand href="/" className="me-auto fw-bold text-primary">
           Student Portal
         </Navbar.Brand>
 
-        {/* Nút toggle (mobile) */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-        {/* Guest nằm sát phải */}
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-          <Nav>
-            <NavDropdown title="Guest" id="basic-nav-dropdown" align="end">
-              <NavDropdown.Item href="login">Login</NavDropdown.Item>
-              <NavDropdown.Item href="register">Register</NavDropdown.Item>
-              <NavDropdown.Item href="login">Logout</NavDropdown.Item>
+          <Nav className="align-items-center">
+            {/* 🛎️ Chỉ hiển thị chuông nếu là user */}
+            {user.role === "user" && (
+              <div className="position-relative me-3" ref={dropdownRef}>
+                <FaBell
+                  className="fs-4 text-primary"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setIsOpen(!isOpen)}
+                />
+                {notifications.length > 0 && (
+                  <Badge
+                    bg="danger"
+                    pill
+                    className="position-absolute top-0 start-100 translate-middle"
+                  >
+                    {notifications.length}
+                  </Badge>
+                )}
+
+                {/* Popup danh sách thông báo */}
+                {isOpen && (
+                  <div
+                    className="position-absolute end-0 mt-2 shadow-lg"
+                    style={{
+                      width: "320px",
+                      background: "white",
+                      borderRadius: "10px",
+                      zIndex: 100,
+                      maxHeight: "350px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <div
+                      className="p-3 border-bottom fw-bold"
+                      style={{
+                        background: "linear-gradient(90deg, #FF8008, #FFC837)",
+                        color: "white",
+                        borderTopLeftRadius: "10px",
+                        borderTopRightRadius: "10px",
+                      }}
+                    >
+                      Thông báo
+                    </div>
+
+                    {notifications.length === 0 ? (
+                      <div className="p-3 text-center text-muted">
+                        Không có thông báo mới
+                      </div>
+                    ) : (
+                      notifications.map((noti) => (
+                        <div
+                          key={noti.id}
+                          className="d-flex justify-content-between align-items-start p-3 border-bottom"
+                        >
+                          <div>
+                            <div className="fw-semibold">{noti.message}</div>
+                            <div className="small text-muted">{noti.time}</div>
+                          </div>
+                          <button
+                            className="btn btn-sm btn-outline-danger ms-2"
+                            onClick={() => removeNotification(noti.id)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 👤 Dropdown user info */}
+            <NavDropdown
+              title={user.name || "Guest"}
+              id="basic-nav-dropdown"
+              align="end"
+            >
+              {!user.name || user.name === "Guest" ? (
+                <>
+                  <NavDropdown.Item href="/login">Login</NavDropdown.Item>
+                  <NavDropdown.Item href="/register">Register</NavDropdown.Item>
+                </>
+              ) : (
+                <NavDropdown.Item onClick={handleLogout}>
+                  Logout
+                </NavDropdown.Item>
+              )}
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

@@ -10,6 +10,7 @@ import {
   FaChartBar,
   FaClipboardList,
   FaTools,
+  FaAddressCard
 } from "react-icons/fa";
 
 const Sidebar = ({ onToggle, onSelect, role = "user" }) => {
@@ -29,14 +30,18 @@ const Sidebar = ({ onToggle, onSelect, role = "user" }) => {
     user: [
       { key: "home", name: "Home", icon: <FaHome /> },
       { key: "profile", name: "Profile", icon: <FaUser /> },
-      { key: "service", name: "Services", icon: <FaBook /> },
-      { key: "contact", name: "Contact", icon: <FaEnvelope /> },
+      { key: "booking", name: "Đặt phòng họp", icon: <FaBook /> },
+      { key: "events", name: "Sự kiện / CLB", icon: <FaClipboardList /> },
+      { key: "equipment", name: "Mượn thiết bị", icon: <FaTools /> },
+      { key: "helpdesk", name: "Hỗ trợ (Help Desk)", icon: <FaEnvelope /> },
+      { key: "feedback", name: "Feedback", icon: <FaAddressCard /> },
     ],
     staff: [
       { key: "dashboard", name: "Trang chủ", icon: <FaHome /> },
       { key: "requests", name: "Quản lý yêu cầu", icon: <FaClipboardList /> },
       { key: "resources", name: "Quản lý tài nguyên", icon: <FaTools /> },
       { key: "processing", name: "Xử lý yêu cầu", icon: <FaBook /> },
+      { key: "feedbacklist", name: "Danh sách feedback", icon: <FaAddressCard/>},
     ],
     admin: [
       { key: "dashboard", name: "Dashboard", icon: <FaChartBar /> },
