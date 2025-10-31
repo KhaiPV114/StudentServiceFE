@@ -1,11 +1,15 @@
-// src/pages/Homepage.js
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Sidebar";
 import Profile from "../components/User/Profile";
-import Service from "../components/User/Service";
+import UserFeedback from "../components/User/UserFeedback";
 import { Container, Row } from "react-bootstrap";
+
+import ServiceBooking from "../components/User/Booking";
+import EventsClubs from "../components/User/EventsAndClub";
+import EquipmentBorrowing from "../components/User/EquipmentLoan";
+import HelpDesk from "../components/User/Helpdesk";
 
 const Homepage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -15,8 +19,16 @@ const Homepage = () => {
     switch (activeTab) {
       case "profile":
         return <Profile />;
-      case "service":
-        return <Service />;
+      case "booking":
+        return <ServiceBooking />;
+      case "events":
+        return <EventsClubs />;
+      case "equipment":
+        return <EquipmentBorrowing />;
+      case "helpdesk":
+        return <HelpDesk />;
+      case "feedback":
+        return <UserFeedback />;
       default:
         return (
           <div
@@ -38,7 +50,7 @@ const Homepage = () => {
 
   return (
     <>
-      <Sidebar onToggle={setIsSidebarOpen} onSelect={setActiveTab} />
+      <Sidebar onToggle={setIsSidebarOpen} onSelect={setActiveTab} role="user" />
       <div
         style={{
           marginLeft: isSidebarOpen ? "220px" : "70px",

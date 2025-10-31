@@ -5,6 +5,7 @@ import StaffDashboard from "../components/Staff/StaffDashboard";
 import RoomRequests from "../components/Staff/RoomRequest";
 import ResourceManagement from "../components/Staff/ResourceManagemnent";
 import Processing from "../components/Staff/RequestProcessing";
+import StaffFeedbackList from "../components/Staff/StaffFeedbackList";
 
 const StaffPage = () => {
   const [selected, setSelected] = useState("dashboard");
@@ -20,6 +21,8 @@ const StaffPage = () => {
         return <ResourceManagement />;
       case "processing":
         return <Processing />;
+      case "feedbacklist":
+        return <StaffFeedbackList/>;
       default:
         return <StaffDashboard />;
     }
@@ -36,7 +39,7 @@ const StaffPage = () => {
           marginLeft: sidebarOpen ? "220px" : "70px", // 🔥 quan trọng
           transition: "margin-left 0.3s ease",
           width: "100%",
-          backgroundColor: "#f8fafc",
+          backgroundColor: "#fafafa",
           minHeight: "100vh",
         }}
       >

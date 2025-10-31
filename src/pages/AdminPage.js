@@ -36,7 +36,7 @@ const AdminPage = () => {
           marginLeft: sidebarOpen ? "220px" : "70px", // 🔥 giúp tránh bị che
           transition: "margin-left 0.3s ease",
           width: "100%",
-          backgroundColor: "#f9fafb",
+          backgroundColor: "#fafafa",
           minHeight: "100vh",
         }}
       >
