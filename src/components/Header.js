@@ -1,24 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Navbar, Nav, Container, NavDropdown, Badge } from "react-bootstrap";
 import { FaBell } from "react-icons/fa";
+import { AuthContext } from "../context/AuthContext";
 
 const Header = () => {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // 👇 Lấy thông tin user (bao gồm role)
-  const user =
-    JSON.parse(sessionStorage.getItem("user")) || {
-      name: "Guest",
-      role: "guest",
-    };
+  const { user, logout } = useContext(AuthContext);
+  const userName = user?.name || "Guest";
+  const userRole = (user?.role || "").toUpperCase();
 
   const handleLogout = () => {
-    sessionStorage.clear();
-    window.location.href = "/login";
+    logout();
   };
-
   // 📩 Lắng nghe sự kiện thông báo mới
   useEffect(() => {
     const handleNewNotification = (event) => {
@@ -62,7 +58,7 @@ const Header = () => {
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Nav className="align-items-center">
             {/* 🛎️ Chỉ hiển thị chuông nếu là user */}
-            {user.role === "user" && (
+            {(userRole !== "ADMIN" && userRole !== "STAFF") && (
               <div className="position-relative me-3" ref={dropdownRef}>
                 <FaBell
                   className="fs-4 text-primary"
@@ -134,20 +130,11 @@ const Header = () => {
 
             {/* 👤 Dropdown user info */}
             <NavDropdown
-              title={user.name || "Guest"}
+              title={userName || "Guest"}
               id="basic-nav-dropdown"
               align="end"
             >
-              {!user.name || user.name === "Guest" ? (
-                <>
-                  <NavDropdown.Item href="/login">Login</NavDropdown.Item>
-                  <NavDropdown.Item href="/register">Register</NavDropdown.Item>
-                </>
-              ) : (
-                <NavDropdown.Item onClick={handleLogout}>
-                  Logout
-                </NavDropdown.Item>
-              )}
+              <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

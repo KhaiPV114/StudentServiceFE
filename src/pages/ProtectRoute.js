@@ -1,9 +1,13 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 function ProtectRoute() {
-  const isLoggedIn = sessionStorage.getItem("userRole"); 
+  const { isAuthenticated, loading } = useContext(AuthContext);
 
-  if (!isLoggedIn) {
+  if (loading) return null; // or a loading spinner
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

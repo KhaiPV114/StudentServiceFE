@@ -1,54 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Form, Button, Card, Container } from "react-bootstrap";
 import { FcGoogle } from "react-icons/fc";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:9999/auth/login", {
-        email,
-        password,
-      });
-
-      const { accessToken, refreshToken } = response.data;
-      
-      if (accessToken && refreshToken) {
-        // Store tokens
-        sessionStorage.setItem("accessToken", accessToken);
-        sessionStorage.setItem("refreshToken", refreshToken);
-        
-        // Decode the JWT to get user info
-        const decodedToken = JSON.parse(atob(accessToken.split('.')[1]));
-        
-        // Store user role and other relevant info
-        sessionStorage.setItem("userRole", decodedToken.role);
-
-        // Navigate based on role
-        switch (decodedToken.role.toUpperCase()) {
-          case "ADMIN":
-            navigate("/admin");
-            break;
-          case "STAFF":
-            navigate("/staff");
-            break;
-          default:
-            navigate("/"); 
-        }
-      } else {
-        setError("Login failed. Please try again.");
-      }
+      await login(email, password);
+      // login() handles navigation on success
     } catch (err) {
-      setError(err.response?.data?.message || "An error occurred. Please try again later.");
+      setError(err.message || "An error occurred. Please try again later.");
     }
   };
 
