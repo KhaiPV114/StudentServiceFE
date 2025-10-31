@@ -1,8 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Button, Card, Container } from "react-bootstrap";
 import { FcGoogle } from "react-icons/fc";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await axios.post("http://localhost:9999/auth/login", {
+        email,
+        password,
+      });
+
+      const { accessToken, refreshToken } = response.data;
+      
+      if (accessToken && refreshToken) {
+        // Store tokens
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        
+        // Decode the JWT to get user info
+        const decodedToken = JSON.parse(atob(accessToken.split('.')[1]));
+        
+        // Store user role and other relevant info
+        localStorage.setItem("userRole", decodedToken.role);
+
+        // Navigate based on role
+        switch (decodedToken.role) {
+          case "ADMIN":
+            navigate("/admin");
+            break;
+          case "STAFF":
+            navigate("/staff");
+            break;
+          default:
+            navigate("/"); // for regular users
+        }
+      } else {
+        setError("Login failed. Please try again.");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "An error occurred. Please try again later.");
+    }
+  };
+
+
   return (
     <div
       style={{
@@ -32,15 +82,33 @@ const Login = () => {
             Student Service Login
           </h3>
 
-          <Form>
+          <Form onSubmit={handleSubmit}>
+            {error && (
+              <div className="alert alert-danger mb-3" role="alert">
+                {error}
+              </div>
+            )}
+
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
-              <Form.Control type="email" placeholder="Enter your email" />
+              <Form.Control
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </Form.Group>
 
             <Form.Group className="mb-4">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Enter your password" />
+              <Form.Control
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </Form.Group>
 
             <Button
