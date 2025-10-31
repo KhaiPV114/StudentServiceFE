@@ -24,17 +24,17 @@ const Login = () => {
       
       if (accessToken && refreshToken) {
         // Store tokens
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
+        sessionStorage.setItem("accessToken", accessToken);
+        sessionStorage.setItem("refreshToken", refreshToken);
         
         // Decode the JWT to get user info
         const decodedToken = JSON.parse(atob(accessToken.split('.')[1]));
         
         // Store user role and other relevant info
-        localStorage.setItem("userRole", decodedToken.role);
+        sessionStorage.setItem("userRole", decodedToken.role);
 
         // Navigate based on role
-        switch (decodedToken.role) {
+        switch (decodedToken.role.toUpperCase()) {
           case "ADMIN":
             navigate("/admin");
             break;
@@ -42,7 +42,7 @@ const Login = () => {
             navigate("/staff");
             break;
           default:
-            navigate("/"); // for regular users
+            navigate("/"); 
         }
       } else {
         setError("Login failed. Please try again.");
