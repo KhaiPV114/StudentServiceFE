@@ -10,8 +10,6 @@ const Homepage = () => {
 
   return (
     <div style={{ backgroundColor: "#FAFAFA", minHeight: "100vh" }}>
-      {/* HEADER */}
-      <Header />
 
       {/* HERO SECTION */}
       <div
