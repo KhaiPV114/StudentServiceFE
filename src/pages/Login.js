@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Form, Button, Card, Container } from "react-bootstrap";
 import { FcGoogle } from "react-icons/fc";
 import { AuthContext } from "../context/AuthContext";
@@ -8,6 +8,24 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { login } = useContext(AuthContext);
+  const [flash, setFlash] = useState(null);
+
+  useEffect(() => {
+    try {
+      const f = sessionStorage.getItem("flash");
+      if (f) {
+        const parsed = JSON.parse(f);
+        setFlash(parsed);
+        // remove immediately so it won't persist
+        sessionStorage.removeItem("flash");
+        // hide after 3 seconds
+        setTimeout(() => setFlash(null), 3000);
+      }
+    } catch (e) {
+      // ignore parse errors
+      sessionStorage.removeItem("flash");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,6 +70,22 @@ const Login = () => {
           </h3>
 
           <Form onSubmit={handleSubmit}>
+            {/* flash popup */}
+            {flash && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: "20px",
+                  right: "20px",
+                  zIndex: 1050,
+                  minWidth: "280px",
+                }}
+              >
+                <div className={`alert alert-${flash.type || "success"}`} role="alert">
+                  {flash.message}
+                </div>
+              </div>
+            )}
             {error && (
               <div className="alert alert-danger mb-3" role="alert">
                 {error}

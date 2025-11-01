@@ -15,7 +15,7 @@ const Header = () => {
   const handleLogout = () => {
     logout();
   };
-  // 📩 Lắng nghe sự kiện thông báo mới
+  
   useEffect(() => {
     const handleNewNotification = (event) => {
       const newNoti = {
@@ -31,7 +31,6 @@ const Header = () => {
       window.removeEventListener("new-notification", handleNewNotification);
   }, []);
 
-  // 📤 Tự động đóng dropdown khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
