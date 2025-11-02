@@ -7,6 +7,7 @@ import UserFeedback from "../components/User/UserFeedback";
 import { Container, Row } from "react-bootstrap";
 
 import ServiceBooking from "../components/User/Booking";
+import BookingHistory from "../components/User/BookingHistory";
 import EventsClubs from "../components/User/EventsAndClub";
 import EquipmentBorrowing from "../components/User/EquipmentLoan";
 import HelpDesk from "../components/User/Helpdesk";
@@ -21,6 +22,8 @@ const StudentPage = () => {
         return <Profile />;
       case "booking":
         return <ServiceBooking />;
+      case "bookingHistory":
+        return <BookingHistory />;
       case "events":
         return <EventsClubs />;
       case "equipment":
