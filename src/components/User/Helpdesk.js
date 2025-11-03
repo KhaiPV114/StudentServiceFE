@@ -20,11 +20,11 @@ const Helpdesk = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    priority: "normal",
+    category: "maintenance",
   });
   const [submitting, setSubmitting] = useState(false);
 
-  // Lấy danh sách ticket
+  // 🟢 Lấy danh sách ticket
   useEffect(() => {
     const fetchTickets = async () => {
       try {
@@ -39,23 +39,23 @@ const Helpdesk = () => {
     fetchTickets();
   }, []);
 
-  // Gửi yêu cầu hỗ trợ
+  // 🟡 Gửi yêu cầu hỗ trợ
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
       const newTicket = {
         ...form,
-        userId: "6714c1a8f8e8b21b2f11a101", // tạm user demo
+        userId: "6714c1a8f8e8b21b2f11a101", // user mặc định
         status: "pending",
       };
       const res = await axios.post(API_TICKETS, newTicket);
       setTickets((prev) => [...prev, res.data]);
-      setForm({ title: "", description: "", priority: "normal" });
-      alert("✅ Gửi yêu cầu hỗ trợ thành công!");
+      setForm({ title: "", description: "", category: "maintenance", priority: "normal" });
+      alert("Gửi yêu cầu hỗ trợ thành công!");
     } catch (error) {
       console.error("Lỗi khi gửi yêu cầu:", error);
-      alert("❌ Gửi yêu cầu thất bại!");
+      alert("Gửi yêu cầu thất bại! Vui lòng thử lại.");
     } finally {
       setSubmitting(false);
     }
@@ -77,11 +77,15 @@ const Helpdesk = () => {
   return (
     <div className="container mt-4 mb-5">
       <h4 className="mb-4" style={{ color: COLORS.textDark }}>
-        🎫 Gửi yêu cầu hỗ trợ (Help Desk)
+        Gửi yêu cầu hỗ trợ (Help Desk)
       </h4>
 
       {/* Form gửi yêu cầu */}
-      <Form onSubmit={handleSubmit} className="p-4 shadow-sm rounded" style={{ backgroundColor: COLORS.bgLight }}>
+      <Form
+        onSubmit={handleSubmit}
+        className="p-4 shadow-sm rounded"
+        style={{ backgroundColor: COLORS.bgLight }}
+      >
         <Form.Group className="mb-3">
           <Form.Label>Tiêu đề yêu cầu</Form.Label>
           <Form.Control
@@ -106,14 +110,15 @@ const Helpdesk = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Mức độ ưu tiên</Form.Label>
+          <Form.Label>Loại yêu cầu</Form.Label>
           <Form.Select
-            value={form.priority}
-            onChange={(e) => setForm({ ...form, priority: e.target.value })}
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+            required
           >
-            <option value="low">Thấp</option>
-            <option value="normal">Trung bình</option>
-            <option value="high">Cao</option>
+            <option value="maintenance">Bảo trì / Sửa chữa</option>
+            <option value="suggestion">Đề xuất / Góp ý</option>
+            <option value="feedback">Phản hồi</option>
           </Form.Select>
         </Form.Group>
 
@@ -149,8 +154,8 @@ const Helpdesk = () => {
             <tr>
               <th>#</th>
               <th>Tiêu đề</th>
+              <th>Loại</th>
               <th>Trạng thái</th>
-              <th>Ưu tiên</th>
               <th>Ngày tạo</th>
             </tr>
           </thead>
@@ -159,17 +164,13 @@ const Helpdesk = () => {
               <tr key={t._id}>
                 <td>{index + 1}</td>
                 <td>{t.title}</td>
+                <td>{t.category}</td>
                 <td>{renderStatusBadge(t.status)}</td>
                 <td>
-                  {t.priority === "high" ? (
-                    <Badge bg="danger">Cao</Badge>
-                  ) : t.priority === "normal" ? (
-                    <Badge bg="secondary">Trung bình</Badge>
-                  ) : (
-                    <Badge bg="light" text="dark">Thấp</Badge>
-                  )}
+                  {t.createdAt
+                    ? new Date(t.createdAt).toLocaleDateString("vi-VN")
+                    : "-"}
                 </td>
-                <td>{new Date(t.createdAt).toLocaleDateString("vi-VN")}</td>
               </tr>
             ))}
           </tbody>
