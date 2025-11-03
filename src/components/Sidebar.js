@@ -10,7 +10,8 @@ import {
   FaChartBar,
   FaClipboardList,
   FaTools,
-  FaAddressCard
+  FaAddressCard,
+  FaHistory,
 } from "react-icons/fa";
 
 const Sidebar = ({ onToggle, onSelect, role = "user" }) => {
@@ -34,6 +35,7 @@ const Sidebar = ({ onToggle, onSelect, role = "user" }) => {
       { key: "events", name: "Sự kiện / CLB", icon: <FaClipboardList /> },
       { key: "equipment", name: "Mượn thiết bị", icon: <FaTools /> },
       { key: "helpdesk", name: "Hỗ trợ (Help Desk)", icon: <FaEnvelope /> },
+      { key: "bookingHistory", name: "Lịch sử đặt phòng", icon: <FaHistory /> },
       { key: "feedback", name: "Feedback", icon: <FaAddressCard /> },
     ],
     staff: [
@@ -41,7 +43,11 @@ const Sidebar = ({ onToggle, onSelect, role = "user" }) => {
       { key: "requests", name: "Quản lý yêu cầu", icon: <FaClipboardList /> },
       { key: "resources", name: "Quản lý tài nguyên", icon: <FaTools /> },
       { key: "processing", name: "Xử lý yêu cầu", icon: <FaBook /> },
-      { key: "feedbacklist", name: "Danh sách feedback", icon: <FaAddressCard/>},
+      {
+        key: "feedbacklist",
+        name: "Danh sách feedback",
+        icon: <FaAddressCard />,
+      },
     ],
     admin: [
       { key: "dashboard", name: "Dashboard", icon: <FaChartBar /> },
@@ -115,8 +121,7 @@ const Sidebar = ({ onToggle, onSelect, role = "user" }) => {
             }`}
             style={{
               color: active === item.key ? "#3B82F6" : "#1E293B",
-              backgroundColor:
-                active === item.key ? "#E0E7FF" : "transparent",
+              backgroundColor: active === item.key ? "#E0E7FF" : "transparent",
               cursor: "pointer",
               transition: "0.2s",
             }}
