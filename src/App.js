@@ -18,14 +18,14 @@ function App() {
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
+         <Route path="/staff" element={<StaffPage />} />
         {/* Protected routes */}
         <Route element={<ProtectRoute />}>
           {/* Default route "/" will be handled based on role */}
           <Route path="/" element={<Homepage />} />
           <Route path="/student" element={<StudentPage />} />
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="/staff" element={<StaffPage />} />
+          {/* <Route path="/staff" element={<StaffPage />} /> */}
           <Route path="/events-clubs" element={<EventsClubs />} />
           <Route path="/helpdesk" element={<Helpdesk />} />
         </Route>
