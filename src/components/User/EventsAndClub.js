@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Button, Badge, Spinner } from "react-bootstrap";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // ✅ thêm dòng này
 
 const API_URL = "http://localhost:9999/api/events";
-
 const COLORS = {
   primary: "#FF7A00",
   secondary: "#007BFF",
@@ -23,8 +23,8 @@ const EventsClubs = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const userId = "6714c1a8f8e8b21b2f11a101"; // user mặc định
+  const navigate = useNavigate(); // ✅ khởi tạo điều hướng
 
-  // 📦 Lấy danh sách sự kiện
   const fetchEvents = async () => {
     try {
       const res = await axios.get(API_URL);
@@ -40,22 +40,17 @@ const EventsClubs = () => {
     fetchEvents();
   }, []);
 
-  // ⚙️ Tham gia sự kiện
   const handleJoinEvent = async (eventId) => {
     try {
       await axios.post(`${API_URL}/${eventId}/join`, { userId });
       alert("✅ Đăng ký tham gia sự kiện thành công!");
       fetchEvents();
     } catch (error) {
-      if (error.response) {
-        alert("⚠️ " + error.response.data.message);
-      } else {
-        alert("❌ Lỗi khi kết nối máy chủ.");
-      }
+      if (error.response) alert("⚠️ " + error.response.data.message);
+      else alert("❌ Lỗi khi kết nối máy chủ.");
     }
   };
 
-  // ⚙️ Hủy đăng ký sự kiện (gọi API thật)
   const handleCancelJoin = async (eventId) => {
     if (window.confirm("Bạn có chắc muốn hủy đăng ký sự kiện này không?")) {
       try {
@@ -63,16 +58,12 @@ const EventsClubs = () => {
         alert("❎ Hủy đăng ký thành công!");
         fetchEvents();
       } catch (error) {
-        if (error.response) {
-          alert("⚠️ " + error.response.data.message);
-        } else {
-          alert("❌ Lỗi khi kết nối máy chủ.");
-        }
+        if (error.response) alert("⚠️ " + error.response.data.message);
+        else alert("❌ Lỗi khi kết nối máy chủ.");
       }
     }
   };
 
-  // 🏷️ Hiển thị trạng thái
   const renderStatusBadge = (status) => {
     switch (status) {
       case "upcoming":
@@ -102,19 +93,11 @@ const EventsClubs = () => {
   }
 
   return (
-    <div
-      style={{
-        background: COLORS.bgLight,
-        padding: "20px",
-        borderRadius: "12px",
-      }}
-    >
+    <div style={{ background: COLORS.bgLight, padding: "20px", borderRadius: "12px" }}>
       <h4 className="mb-4" style={{ color: COLORS.primary, fontWeight: 600 }}>
         Sự kiện & Hoạt động
       </h4>
-      <p style={{ color: COLORS.textLight }}>
-        Xem danh sách các sự kiện sắp diễn ra và đăng ký tham gia.
-      </p>
+      <p style={{ color: COLORS.textLight }}>Xem danh sách các sự kiện sắp diễn ra và đăng ký tham gia.</p>
 
       <Row>
         {events.length === 0 ? (
@@ -126,10 +109,7 @@ const EventsClubs = () => {
             <Col md={6} lg={4} key={event._id} className="mb-4">
               <Card
                 className="shadow-sm border-0 h-100"
-                style={{
-                  borderRadius: "12px",
-                  border: `1px solid ${COLORS.border}`,
-                }}
+                style={{ borderRadius: "12px", border: `1px solid ${COLORS.border}` }}
               >
                 {event.image ? (
                   <Card.Img
@@ -167,17 +147,13 @@ const EventsClubs = () => {
 
                 <Card.Body>
                   <div className="d-flex justify-content-between align-items-start mb-2">
-                    <Badge
-                      bg={event.type === "club_event" ? "primary" : "secondary"}
-                    >
+                    <Badge bg={event.type === "club_event" ? "primary" : "secondary"}>
                       {event.type}
                     </Badge>
                     {renderStatusBadge(event.status)}
                   </div>
 
-                  <Card.Title
-                    style={{ fontWeight: 600, color: COLORS.textDark }}
-                  >
+                  <Card.Title style={{ fontWeight: 600, color: COLORS.textDark }}>
                     {event.title}
                   </Card.Title>
 
@@ -191,43 +167,43 @@ const EventsClubs = () => {
                     })}
                   </Card.Text>
 
-                  {event.participants?.includes(userId) ? (
+                  <div className="d-flex justify-content-between align-items-center mt-3">
+                    {/* ✅ Nút xem chi tiết */}
                     <Button
                       size="sm"
-                      style={{
-                        backgroundColor: "#6c757d",
-                        border: "none",
-                        fontWeight: 500,
-                      }}
-                      onClick={() => handleCancelJoin(event._id)}
-                      onMouseOver={(e) =>
-                        (e.target.style.backgroundColor = "#5c636a")
-                      }
-                      onMouseOut={(e) =>
-                        (e.target.style.backgroundColor = "#6c757d")
-                      }
+                      variant="outline-primary"
+                      onClick={() => navigate(`/events/${event._id}`)} // 👉 truyền ID qua URL
                     >
-                      Hủy đăng ký
+                      Xem chi tiết
                     </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      style={{
-                        backgroundColor: COLORS.primary,
-                        border: "none",
-                        fontWeight: 500,
-                      }}
-                      onClick={() => handleJoinEvent(event._id)}
-                      onMouseOver={(e) =>
-                        (e.target.style.backgroundColor = COLORS.hoverPrimary)
-                      }
-                      onMouseOut={(e) =>
-                        (e.target.style.backgroundColor = COLORS.primary)
-                      }
-                    >
-                      Đăng ký
-                    </Button>
-                  )}
+
+                    {/* ✅ Nút đăng ký / hủy */}
+                    {event.participants?.includes(userId) ? (
+                      <Button
+                        size="sm"
+                        style={{
+                          backgroundColor: "#6c757d",
+                          border: "none",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => handleCancelJoin(event._id)}
+                      >
+                        Hủy đăng ký
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        style={{
+                          backgroundColor: COLORS.primary,
+                          border: "none",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => handleJoinEvent(event._id)}
+                      >
+                        Đăng ký
+                      </Button>
+                    )}
+                  </div>
                 </Card.Body>
               </Card>
             </Col>
