@@ -7,13 +7,12 @@ import UserFeedback from "../components/User/UserFeedback";
 import { Container, Row } from "react-bootstrap";
 
 import ServiceBooking from "../components/User/Booking";
-import BookingHistory from "../components/User/BookingHistory";
 import EventsClubs from "../components/User/EventsAndClub";
 import EquipmentBorrowing from "../components/User/EquipmentLoan";
 import HelpDesk from "../components/User/Helpdesk";
 import BookingHistory from "../components/User/BookingHistory";
 
-const Homepage = () => {
+const StudentPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("home");
 
@@ -73,4 +72,4 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+export default StudentPage;
