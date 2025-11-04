@@ -14,22 +14,22 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
-        {/* Protected routes */}
-        <Route element={<ProtectRoute />}>
-          {/* Default route "/" will be handled based on role */}
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<Homepage />} />
-          <Route path="/student" element={<StudentPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/staff" element={<StaffPage />} />
-          <Route path="/events-clubs" element={<EventsClubs />} />
-          <Route path="/helpdesk" element={<Helpdesk />} />
-        </Route>
-      </Routes>
+
+          {/* Protected routes */}
+          <Route element={<ProtectRoute />}>
+            {/* Default route "/" will be handled based on role */}
+            <Route path="/student" element={<StudentPage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/staff" element={<StaffPage />} />
+            <Route path="/events-clubs" element={<EventsClubs />} />
+            <Route path="/helpdesk" element={<Helpdesk />} />
+          </Route>
+        </Routes>
       </AuthProvider>
     </BrowserRouter>
   );
