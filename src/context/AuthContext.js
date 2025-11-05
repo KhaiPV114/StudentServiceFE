@@ -42,7 +42,6 @@ export const AuthProvider = ({ children }) => {
       } else {
         // invalid token
         localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
       }
     }
     setLoading(false);
@@ -55,14 +54,13 @@ export const AuthProvider = ({ children }) => {
         password,
       });
 
-      const { accessToken, refreshToken } = res.data;
-      if (!accessToken || !refreshToken) {
+      const { accessToken } = res.data;
+      if (!accessToken) {
         throw new Error("Login failed: tokens not returned");
       }
 
       // store tokens
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
 
       // set default auth header for axios
       axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
@@ -73,7 +71,6 @@ export const AuthProvider = ({ children }) => {
       if (!decoded) {
         // token malformed; clear and error
         localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
         delete axios.defaults.headers.common["Authorization"];
         throw new Error("Received malformed access token");
       }
@@ -102,7 +99,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = (redirect = "/login") => {
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
     delete axios.defaults.headers.common["Authorization"];
     setUser(null);
     navigate(redirect);
