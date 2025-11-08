@@ -19,23 +19,17 @@ import {
   FaFilter,
 } from "react-icons/fa";
 // Giả định AuthContext được export từ đây, dựa trên file Header.js
-import { AuthContext } from "../../context/AuthContext";
+// import { AuthContext } from "../../context/AuthContext"; // Tạm thời không dùng
 
 // --- Cấu hình API ---
-// Giả định prefix API của bạn là /api.
-// API routes sẽ là GET /api/events, POST /api/events, v.v.
 const API_BASE_URL = "http://localhost:9999/events";
 
-// --- Ánh xạ trạng thái (BE -> FE) ---
-// Trạng thái từ BE (schema) và màu badge tương ứng
 const statusColors = {
   upcoming: "info",
   finished: "secondary",
   cancelled: "danger",
-  // BE không có 'ongoing', nên chúng ta loại bỏ nó
 };
 
-// Trạng thái từ BE (schema) và tên tiếng Việt
 const statusVietnamese = {
   upcoming: "Sắp diễn ra",
   finished: "Đã kết thúc",
@@ -43,10 +37,6 @@ const statusVietnamese = {
 };
 
 // --- Helper định dạng ngày giờ ---
-/**
- * Chuyển đổi chuỗi ISO (từ DB) sang định dạng yyyy-MM-ddTHH:mm
- * mà <input type="datetime-local"> yêu cầu.
- */
 const formatDateForInput = (isoString) => {
   if (!isoString) return "";
   try {
@@ -71,9 +61,13 @@ const EventManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Lấy thông tin user (staff) từ Context
-  // Vẫn giữ lại 'user' để vô hiệu hóa các nút
-  const { user } = useContext(AuthContext);
+  // === THAY ĐỔI: FIX CỨNG USER ĐỂ TEST ===
+  // const { user } = useContext(AuthContext); // Tạm thời vô hiệu hóa Context
+  const user = {
+    _id: "6908bbd3d1aad448987e8b36", // ID bạn cung cấp
+    name: "Fake Staff Account" // Tên giả
+  };
+  // === KẾT THÚC FAKE USER ===
 
   // --- Hàm gọi API ---
   const fetchEvents = async () => {
@@ -154,12 +148,6 @@ const EventManagement = () => {
   const handleSaveEvent = async (e) => {
     e.preventDefault();
     
-    // === THAY ĐỔI 1: GỠ BỎ KIỂM TRA USER ===
-    // if (!isEditMode && !user?._id) {
-    //    alert("Lỗi: Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.");
-    //    return;
-    // }
-
     // Dữ liệu gửi đi (payload)
     const eventData = { ...currentEvent };
     
@@ -172,10 +160,9 @@ const EventManagement = () => {
       method = "PUT";
     } else {
       // --- Chế độ CREATE (POST) ---
-      // === THAY ĐỔI 2: GỠ BỎ GÁN organizerId ===
-      // Tự động thêm organizerId từ user đang đăng nhập
-      // eventData.organizerId = user._id; // <-- Dòng này sẽ gây lỗi nếu user là null
-      // Cảnh báo: Gửi 'organizerId: null' lên BE.
+      // === THAY ĐỔI: KHÔI PHỤC GÁN organizerId ===
+      // Tự động thêm organizerId từ user (fake)
+      eventData.organizerId = user._id; 
     }
 
     try {
@@ -203,11 +190,6 @@ const EventManagement = () => {
   };
 
   const handleDeleteEvent = async (id) => {
-    // === THAY ĐỔI 3: GỠ BỎ KIỂM TRA USER ===
-    // if (!user) {
-    //   return alert("Vui lòng đăng nhập để thực hiện hành động này.");
-    // }
-
     // Sử dụng modal xác nhận thay vì window.confirm
     if (!window.confirm("Bạn có chắc chắn muốn xóa sự kiện này?")) {
       return;
@@ -287,13 +269,14 @@ const EventManagement = () => {
                   </Badge>
                 </td>
                 <td>
-                  {/* === THAY ĐỔI 4: GỠ BỎ 'disabled' === */}
+                  {/* === THAY ĐỔI: KHÔI PHỤC 'disabled' === */}
+                  {/* (Vì user (fake) luôn tồn tại, 'disabled' sẽ là false) */}
                   <Button
                     variant="outline-primary"
                     size="sm"
                     className="me-2"
                     onClick={() => handleShowModal(event)}
-                    // disabled={!user} // Gỡ bỏ
+                    disabled={!user} 
                   >
                     <FaEdit />
                   </Button>
@@ -301,7 +284,7 @@ const EventManagement = () => {
                     variant="outline-danger"
                     size="sm"
                     onClick={() => handleDeleteEvent(event._id)} // Sử dụng _id
-                    // disabled={!user} // Gỡ bỏ
+                    disabled={!user} 
                   >
                     <FaTrash />
                   </Button>
@@ -362,8 +345,9 @@ const EventManagement = () => {
               md={8}
               className="d-flex align-items-end justify-content-end"
             >
-              {/* === THAY ĐỔI 5: GỠ BỎ 'disabled' === */}
-              <Button variant="primary" onClick={() => handleShowModal(null)} /* disabled={!user} */>
+              {/* === THAY ĐỔI: KHÔI PHỤC 'disabled' === */}
+              {/* (Vì user (fake) luôn tồn tại, 'disabled' sẽ là false) */}
+              <Button variant="primary" onClick={() => handleShowModal(null)} disabled={!user}>
                 <FaPlus className="me-2" /> Tạo sự kiện mới
               </Button>
             </Col>
@@ -436,7 +420,6 @@ const EventManagement = () => {
                     >
                       <option value="workshop">Workshop</option>
                       <option value="club_event">Club Event</option>
-                      {/* SỬA LỖI 3: Khớp với dữ liệu JSON */}
                       <option value="career_fair">Ngày hội việc làm</option>
                     </Form.Select>
                   </Form.Group>

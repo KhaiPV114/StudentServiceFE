@@ -19,10 +19,10 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
          <Route path="/staff" element={<StaffPage />} />
+         <Route path="/" element={<Homepage />} />
         {/* Protected routes */}
         <Route element={<ProtectRoute />}>
           {/* Default route "/" will be handled based on role */}
-          <Route path="/" element={<Homepage />} />
           <Route path="/student" element={<StudentPage />} />
           <Route path="/admin" element={<AdminPage />} />
           {/* <Route path="/staff" element={<StaffPage />} /> */}
