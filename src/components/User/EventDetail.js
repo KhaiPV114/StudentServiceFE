@@ -123,7 +123,7 @@ const EventDetail = () => {
     >
       <Button
         variant="light"
-        onClick={() => navigate("/events")}
+        onClick={() => navigate("/student")}
         style={{
           border: `1px solid ${COLORS.border}`,
           marginBottom: "15px",
