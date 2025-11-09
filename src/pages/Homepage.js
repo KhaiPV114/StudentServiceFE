@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Container, Row, Col, Button, Card } from "react-bootstrap";
 import { Calendar, Bell, ClipboardCheck, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { AuthContext } from "../context/AuthContext";
 
 const Homepage = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const role = (user.role || "").toUpperCase();
+      if (role === "ADMIN") navigate("/admin");
+      else if (role === "STAFF") navigate("/staff");
+      else navigate("/student");
+    }
+  }, [isAuthenticated, user, navigate]);
 
   return (
     <div style={{ backgroundColor: "#FAFAFA", minHeight: "100vh" }}>

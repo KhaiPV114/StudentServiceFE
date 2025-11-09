@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
+import RoomBookingContext from "../../context/RoomBookingContext";
 
 const RoomRequests = () => {
-  const [requests, setRequests] = useState([
-    { id: 1, name: "Đặt phòng 101", status: "Chờ duyệt" },
-    { id: 2, name: "Phòng LAB 203", status: "Đang xử lý" },
-    { id: 3, name: "Phòng hội nghị", status: "Hoàn thành" },
-    { id: 4, name: "Phòng thí nghiệm 402", status: "Hủy" },
-  ]);
+  const {
+    bookingRequests,
+    approveBookingRequest,
+    cancelBookingRequest,
+  } = useContext(RoomBookingContext);
 
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -22,18 +22,20 @@ const RoomRequests = () => {
     setShowModal(false);
   };
 
-  const handleUpdateStatus = (newStatus) => {
-    setRequests((prev) =>
-      prev.map((r) =>
-        r.id === selectedRequest.id ? { ...r, status: newStatus } : r
-      )
-    );
+  const handleUpdateStatus = async (newStatus) => {
+    if (!selectedRequest) return;
+
+    if (newStatus === "BOOKED") {
+      await approveBookingRequest(selectedRequest._id);
+    } else if (newStatus === "CANCELLED") {
+      await cancelBookingRequest(selectedRequest._id);
+    }
+
     handleCloseModal();
   };
 
-  // Hàm kiểm tra xem trạng thái có được phép cập nhật không
   const canUpdate = (status) => {
-    return !(status === "Hoàn thành" || status === "Hủy");
+    return !(status === "BOOKED" || status === "CANCELLED");
   };
 
   return (
@@ -43,26 +45,26 @@ const RoomRequests = () => {
       <table className="table table-striped align-middle">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Tên yêu cầu</th>
+            <th>No</th>
+            <th>Phòng</th>
+            <th>Ngày</th>
             <th>Trạng thái</th>
-            <th>Hành động</th>
+            <th>Tùy chọn</th>
           </tr>
         </thead>
         <tbody>
-          {requests.map((r) => (
-            <tr key={r.id}>
-              <td>{r.id}</td>
-              <td>{r.name}</td>
+          {bookingRequests.map((r, idx) => (
+            <tr key={r._id}>
+              <td>{idx + 1}</td>
+              <td>{r.roomId?.name}</td>
+              <td>{new Date(r.date).toISOString().split("T")[0]}</td>
               <td>
                 <span
                   className={`badge ${
-                    r.status === "Hoàn thành"
+                    r.status === "BOOKED"
                       ? "bg-success"
-                      : r.status === "Hủy"
+                      : r.status === "CANCELLED"
                       ? "bg-danger"
-                      : r.status === "Đang xử lý"
-                      ? "bg-info"
                       : "bg-warning text-dark"
                   }`}
                 >
@@ -79,6 +81,7 @@ const RoomRequests = () => {
                   </button>
                 ) : (
                   <span className="text-muted small fst-italic">
+                    Không thể cập nhật
                   </span>
                 )}
               </td>
@@ -87,7 +90,7 @@ const RoomRequests = () => {
         </tbody>
       </table>
 
-      {/* Modal cập nhật trạng thái */}
+      {/* Modal cập nhật */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>Cập nhật trạng thái yêu cầu</Modal.Title>
@@ -96,24 +99,30 @@ const RoomRequests = () => {
           {selectedRequest && (
             <>
               <p>
-                <strong>Tên yêu cầu:</strong> {selectedRequest.name}
+                <strong>Phòng:</strong> {selectedRequest.roomId?.name}
+              </p>
+              <p>
+                <strong>Ngày:</strong>{" "}
+                {new Date(selectedRequest.date).toISOString().split("T")[0]}
               </p>
               <p>
                 <strong>Trạng thái hiện tại:</strong>{" "}
-                <span className="badge bg-secondary">{selectedRequest.status}</span>
+                <span className="badge bg-secondary">
+                  {selectedRequest.status}
+                </span>
               </p>
             </>
           )}
           <div className="d-flex justify-content-around mt-3">
             <Button
               variant="success"
-              onClick={() => handleUpdateStatus("Hoàn thành")}
+              onClick={() => handleUpdateStatus("BOOKED")}
             >
               ✅ Xác nhận
             </Button>
             <Button
               variant="danger"
-              onClick={() => handleUpdateStatus("Hủy")}
+              onClick={() => handleUpdateStatus("CANCELLED")}
             >
               ❌ Hủy yêu cầu
             </Button>

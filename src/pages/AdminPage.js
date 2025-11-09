@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import AdminDashboard from "../components/Admin/Admindashboard";
 import UserManagement from "../components/Admin/Usermanagement";
 import Reports from "../components/Admin/Reports";
 import SystemNotice from "../components/Admin/SystemNotice";
+import UserContext from "../context/UserContext";
 
 const AdminPage = () => {
   const [selected, setSelected] = useState("dashboard");
