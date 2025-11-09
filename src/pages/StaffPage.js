@@ -6,7 +6,8 @@ import RoomRequests from "../components/Staff/RoomRequest";
 import ResourceManagement from "../components/Staff/ResourceManagemnent";
 import Processing from "../components/Staff/RequestProcessing";
 import StaffFeedbackList from "../components/Staff/StaffFeedbackList";
-import EventManagement from "../components/Staff/EventManagement"; 
+import BookingHistory from "../components/User/BookingHistory";
+import EventManagement from "../components/Staff/EventManagement";
 
 const StaffPage = () => {
   const [selected, setSelected] = useState("dashboard");
@@ -26,6 +27,8 @@ const StaffPage = () => {
         return <EventManagement />;
       case "feedbacklist":
         return <StaffFeedbackList/>;
+      case "bookings":
+        return <BookingHistory />;
       default:
         return <StaffDashboard />;
     }

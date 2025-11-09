@@ -9,27 +9,33 @@ import EventsClubs from "./components/User/EventsAndClub";
 import Helpdesk from "./components/User/Helpdesk";
 import ProtectRoute from "./pages/ProtectRoute";
 import StudentPage from "./pages/StudentPage";
+import EventDetail  from "./components/User/EventDetail";
 import { AuthProvider } from "./context/AuthContext";
+import { RoomProvider } from "./context/RoomContext";
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-         <Route path="/staff" element={<StaffPage />} />
-         <Route path="/" element={<Homepage />} />
-        {/* Protected routes */}
-        <Route element={<ProtectRoute />}>
-          {/* Default route "/" will be handled based on role */}
-          <Route path="/student" element={<StudentPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          {/* <Route path="/staff" element={<StaffPage />} /> */}
-          <Route path="/events-clubs" element={<EventsClubs />} />
-          <Route path="/helpdesk" element={<Helpdesk />} />
-        </Route>
-      </Routes>
+        <RoomProvider>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Homepage />} />
+
+            {/* Protected routes */}
+            <Route element={<ProtectRoute />}>
+              {/* Default route "/" will be handled based on role */}
+              <Route path="/student" element={<StudentPage />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/staff" element={<StaffPage />} />
+              <Route path="/events" element={<EventsClubs />} />
+              <Route path="/events/:id" element={<EventDetail />} />
+              <Route path="/helpdesk" element={<Helpdesk />} />
+            </Route>
+          </Routes>
+        </RoomProvider>
       </AuthProvider>
     </BrowserRouter>
   );

@@ -11,8 +11,9 @@ import EventsClubs from "../components/User/EventsAndClub";
 import EquipmentBorrowing from "../components/User/EquipmentLoan";
 import HelpDesk from "../components/User/Helpdesk";
 import BookingHistory from "../components/User/BookingHistory";
+import EventDetail from "../components/User/EventDetail";
 
-const Homepage = () => {
+const StudentPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("home");
 
@@ -22,8 +23,12 @@ const Homepage = () => {
         return <Profile />;
       case "booking":
         return <ServiceBooking />;
+      case "bookingHistory":
+        return <BookingHistory />;
       case "events":
         return <EventsClubs />;
+        case "eventsDetail":
+        return <EventDetail />;
       case "equipment":
         return <EquipmentBorrowing />;
       case "helpdesk":
@@ -70,4 +75,4 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+export default StudentPage;
