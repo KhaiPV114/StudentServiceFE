@@ -1,30 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { 
-    Modal, 
-    Button, 
-    Spinner, 
-    Alert, 
-    Table, 
-    Badge 
-} from "react-bootstrap";
-
-// === CẤU HÌNH API ===
-// Giả định API Ticket của bạn chạy ở đây
-const API_BASE_URL = "http://localhost:9999/tickets"; 
-
-// --- Ánh xạ trạng thái (BE -> FE) ---
-// Dùng để hiển thị Badge màu và Tên tiếng Việt
-const statusMap = {
-  pending: { text: "Chờ duyệt", bg: "warning", textDark: true },
-  in_progress: { text: "Đang xử lý", bg: "info", textDark: false },
-  resolved: { text: "Hoàn thành", bg: "success", textDark: false },
-  closed: { text: "Hủy", bg: "danger", textDark: false },
-};
+import React, { useContext, useEffect, useState } from "react";
+import { Modal, Button } from "react-bootstrap";
+import RoomBookingContext from "../../context/RoomBookingContext";
 
 const RoomRequests = () => {
-  // Đổi 'requests' thành 'tickets'
-  const [tickets, setTickets] = useState([]);
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const {
+    bookingRequests,
+    approveBookingRequest,
+    cancelBookingRequest,
+  } = useContext(RoomBookingContext);
+
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   // State cho API
@@ -64,39 +49,20 @@ const RoomRequests = () => {
     setShowModal(false);
   };
 
-  // --- Hàm gọi API (PUT) ---
-  const handleUpdateStatus = async (newStatusBE) => {
-    if (!selectedTicket) return;
+  const handleUpdateStatus = async (newStatus) => {
+    if (!selectedRequest) return;
 
-    // newStatusBE phải là giá trị của backend (vd: "resolved" hoặc "closed")
-    const url = `${API_BASE_URL}/${selectedTicket._id}`; // Dùng _id từ MongoDB
-
-    try {
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          // "Authorization": `Bearer ${user.token}` // Thêm nếu cần
-        },
-        body: JSON.stringify({ status: newStatusBE }), // Chỉ gửi trạng thái mới
-      });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || "Cập nhật thất bại");
-      }
-
-      // Cập nhật thành công
-      handleCloseModal();
-      fetchTickets(); // Tải lại danh sách
-    } catch (err) {
-      alert(`Lỗi: ${err.message}`);
+    if (newStatus === "BOOKED") {
+      await approveBookingRequest(selectedRequest._id);
+    } else if (newStatus === "CANCELLED") {
+      await cancelBookingRequest(selectedRequest._id);
     }
+
+    handleCloseModal();
   };
 
-  // Hàm kiểm tra xem trạng thái có được phép cập nhật không (dùng trạng thái BE)
-  const canUpdate = (statusBE) => {
-    return !(statusBE === "resolved" || statusBE === "closed");
+  const canUpdate = (status) => {
+    return !(status === "BOOKED" || status === "CANCELLED");
   };
 
   // --- Render ---
@@ -180,43 +146,93 @@ const RoomRequests = () => {
       {/* Đổi tiêu đề cho khớp với API */}
       <h4 className="fw-bold mb-3 text-primary">Quản lý Yêu cầu (Tickets)</h4>
 
-      {/* Hiển thị Loading, Lỗi hoặc Bảng */}
-      {loading ? renderLoading() : error ? renderError() : renderTable()}
+      <table className="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Phòng</th>
+            <th>Ngày</th>
+            <th>Trạng thái</th>
+            <th>Tùy chọn</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bookingRequests.map((r, idx) => (
+            <tr key={r._id}>
+              <td>{idx + 1}</td>
+              <td>{r.roomId?.name}</td>
+              <td>{new Date(r.date).toISOString().split("T")[0]}</td>
+              <td>
+                <span
+                  className={`badge ${
+                    r.status === "BOOKED"
+                      ? "bg-success"
+                      : r.status === "CANCELLED"
+                      ? "bg-danger"
+                      : "bg-warning text-dark"
+                  }`}
+                >
+                  {r.status}
+                </span>
+              </td>
+              <td>
+                {canUpdate(r.status) ? (
+                  <button
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={() => handleOpenModal(r)}
+                  >
+                    Cập nhật
+                  </button>
+                ) : (
+                  <span className="text-muted small fst-italic">
+                    Không thể cập nhật
+                  </span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      {/* Modal cập nhật trạng thái */}
-      {selectedTicket && (
-        <Modal show={showModal} onHide={handleCloseModal} centered>
-          <Modal.Header closeButton>
-            <Modal.Title>Cập nhật trạng thái yêu cầu</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              <strong>Tên yêu cầu:</strong> {selectedTicket.title}
-            </p>
-            <p>
-              <strong>Trạng thái hiện tại:</strong>{" "}
-              <span className="badge bg-secondary">
-                {statusMap[selectedTicket.status]?.text || selectedTicket.status}
-              </span>
-            </p>
-            
-            <div className="d-flex justify-content-around mt-3">
-              <Button
-                variant="success"
-                onClick={() => handleUpdateStatus("resolved")} // Gửi trạng thái BE
-              >
-                ✅ Xác nhận (Resolved)
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => handleUpdateStatus("closed")} // Gửi trạng thái BE
-              >
-                ❌ Hủy (Closed)
-              </Button>
-            </div>
-          </Modal.Body>
-        </Modal>
-      )}
+      {/* Modal cập nhật */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Cập nhật trạng thái yêu cầu</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedRequest && (
+            <>
+              <p>
+                <strong>Phòng:</strong> {selectedRequest.roomId?.name}
+              </p>
+              <p>
+                <strong>Ngày:</strong>{" "}
+                {new Date(selectedRequest.date).toISOString().split("T")[0]}
+              </p>
+              <p>
+                <strong>Trạng thái hiện tại:</strong>{" "}
+                <span className="badge bg-secondary">
+                  {selectedRequest.status}
+                </span>
+              </p>
+            </>
+          )}
+          <div className="d-flex justify-content-around mt-3">
+            <Button
+              variant="success"
+              onClick={() => handleUpdateStatus("BOOKED")}
+            >
+              ✅ Xác nhận
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => handleUpdateStatus("CANCELLED")}
+            >
+              ❌ Hủy yêu cầu
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

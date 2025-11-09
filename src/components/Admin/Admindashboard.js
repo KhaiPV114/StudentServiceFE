@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { FaUsers, FaChartBar, FaClipboardList } from "react-icons/fa";
+import UserContext from "../../context/UserContext";
 
 const AdminDashboard = () => {
+
+    const {totalUser} = useContext(UserContext)
+
   const stats = [
-    { icon: <FaUsers />, label: "Tổng số người dùng", value: 1500 },
+    { icon: <FaUsers />, label: "Tổng số người dùng", value: totalUser },
     { icon: <FaChartBar />, label: "Báo cáo tháng", value: 28 },
     { icon: <FaClipboardList />, label: "Hệ thống hoạt động", value: "Ổn định" },
   ];

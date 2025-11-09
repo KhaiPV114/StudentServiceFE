@@ -13,69 +13,58 @@ export const RoomProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  console.log(
-    "location: " + location + " slotId: " + slotId + " date: " + date
-  );
-
   const getRooms = async () => {
-    setError(null);
     try {
       const response = await axios.get(`http://localhost:9999/rooms`);
-      //   console.log(response.data);
       setRooms(response.data);
-      return response.data;
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch rooms");
-      throw err;
     }
   };
 
   const getSlots = async () => {
-    setError(null);
     try {
       const response = await axios.get(`http://localhost:9999/slots`);
-      //   console.log(response.data);
       setSlots(response.data);
-      return response.data;
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch slots");
-      throw err;
     }
   };
 
-  const getRoomsAvailable = async () => {
-    if (!location || !date || !slotId) return; // Only fetch when all selected
-
+  const getRoomsAvailable = async (location, slotId, date) => {
+    if (!location || !slotId || !date) return;
     setError(null);
+    setLoading(true);
     try {
       const response = await axios.get(
         `http://localhost:9999/rooms/availability/${location}/${slotId}/${date}`
       );
-      setRoomsAvailable(response.data.data); // note: backend returns { success, data: [...] }
-      return response.data.data;
+      
+      setRoomsAvailable(response.data);
     } catch (err) {
-      console.error(err);
-      setError(
-        err.response?.data?.message || "Failed to fetch available rooms"
-      );
+      setError(err.response?.data?.message || "Failed to fetch available rooms");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const bookingRoom = async (userId, roomId, slotId, date) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:9999/roombookings`,
+        { userId, roomId, slotId, date }
+      );
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to book room");
+    }
+  };
+
+
 
   useEffect(() => {
     getRooms();
     getSlots();
   }, []);
-
-  useEffect(() => {
-    getRoomsAvailable();
-  }, [location, date, slotId]);
-
-  // You can add more functions here like:
-  // - createRoom
-  // - updateRoom
-  // - deleteRoom
-  // - getRoomDetails
-  // etc.
 
   const value = {
     rooms,
@@ -88,6 +77,10 @@ export const RoomProvider = ({ children }) => {
     setDate,
     slotId,
     setSlotId,
+    getRoomsAvailable,
+    loading,
+    setRoomsAvailable,
+    bookingRoom,
   };
 
   return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;

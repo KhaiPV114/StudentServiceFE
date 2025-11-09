@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
           email: decoded.email,
           name: decoded.name,
           role: decoded.role,
+          id: decoded._id,
         });
       } else {
         // invalid token
@@ -83,6 +84,8 @@ export const AuthProvider = ({ children }) => {
         role: decoded.role,
       };
 
+      localStorage.setItem("id", decoded.id);
+
       setUser(currentUser);
 
       // Navigate based on role
@@ -101,6 +104,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = (redirect = "/login") => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("id");
     delete axios.defaults.headers.common["Authorization"];
     setUser(null);
     navigate(redirect);
