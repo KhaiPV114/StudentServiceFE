@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import RoomBookingContext from "../../context/RoomBookingContext";
 
@@ -12,40 +12,13 @@ const RoomRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  // State cho API
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // --- Hàm gọi API (GET) ---
-  const fetchTickets = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(API_BASE_URL); // Gọi API GET
-      if (!response.ok) {
-        throw new Error("Không thể tải danh sách yêu cầu");
-      }
-      const data = await response.json();
-      setTickets(data || []);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // --- Tải dữ liệu khi component mount ---
-  useEffect(() => {
-    fetchTickets();
-  }, []); // Chạy 1 lần
-
-  const handleOpenModal = (ticket) => {
-    setSelectedTicket(ticket);
+  const handleOpenModal = (request) => {
+    setSelectedRequest(request);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
-    setSelectedTicket(null);
+    setSelectedRequest(null);
     setShowModal(false);
   };
 
@@ -65,86 +38,9 @@ const RoomRequests = () => {
     return !(status === "BOOKED" || status === "CANCELLED");
   };
 
-  // --- Render ---
-
-  const renderLoading = () => (
-    <div className="text-center p-5">
-      <Spinner animation="border" variant="primary" />
-      <p className="mt-2">Đang tải dữ liệu...</p>
-    </div>
-  );
-
-  const renderError = () => (
-    <Alert variant="danger">
-      <Alert.Heading>Đã xảy ra lỗi</Alert.Heading>
-      <p>{error}</p>
-      <Button onClick={fetchTickets} variant="danger">Thử lại</Button>
-    </Alert>
-  );
-
-  const renderTable = () => (
-    <Table striped bordered hover responsive="lg" className="align-middle shadow-sm bg-white">
-      <thead className="table-light">
-        <tr>
-          <th>#</th>
-          <th>Tên yêu cầu (Title)</th>
-          <th>Loại (Category)</th>
-          <th>Trạng thái (Status)</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody>
-        {tickets.length > 0 ? (
-          tickets.map((ticket, index) => {
-            // Lấy thông tin hiển thị từ statusMap
-            const statusInfo = statusMap[ticket.status] || { text: ticket.status, bg: "secondary", textDark: false };
-
-            return (
-              <tr key={ticket._id}> {/* Dùng _id từ MongoDB */}
-                <td>{index + 1}</td>
-                <td>{ticket.title}</td>
-                <td>{ticket.category}</td>
-                <td>
-                  <Badge
-                    bg={statusInfo.bg}
-                    className={statusInfo.textDark ? "text-dark" : ""}
-                  >
-                    {statusInfo.text}
-                  </Badge>
-                </td>
-                <td>
-                  {canUpdate(ticket.status) ? (
-                    <button
-                      className="btn btn-sm btn-outline-primary"
-                      onClick={() => handleOpenModal(ticket)}
-                      // disabled={!user} // <-- ĐÃ GỠ BỎ
-                    >
-                      Cập nhật
-                    </button>
-                  ) : (
-                    <span className="text-muted small fst-italic">
-                      Đã xử lý
-                    </span>
-                  )}
-                </td>
-              </tr>
-            );
-          })
-        ) : (
-           <tr>
-              <td colSpan="5" className="text-center text-muted p-3">
-                Không tìm thấy yêu cầu (ticket) nào.
-              </td>
-            </tr>
-        )}
-      </tbody>
-    </Table>
-  );
-
   return (
     <div className="p-4">
-      {/* Đổi tiêu đề cho khớp với API */}
-      <h4 className="fw-bold mb-3 text-primary">Quản lý Yêu cầu (Tickets)</h4>
+      <h4 className="fw-bold mb-3 text-primary">Quản lý yêu cầu đặt phòng</h4>
 
       <table className="table table-striped align-middle">
         <thead>

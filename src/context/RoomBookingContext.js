@@ -5,6 +5,7 @@ const RoomBookingContext = createContext(null);
 
 export const RoomBookingProvider = ({ children }) => {
   const [bookingRequests, setBookingRequests] = useState([]);
+  const [bookingHistory, setBookingHistory] = useState([]);
 
   const getBookingRequests = async () => {
     try {
@@ -17,7 +18,9 @@ export const RoomBookingProvider = ({ children }) => {
 
   const approveBookingRequest = async (id) => {
     try {
-      const res = await axios.post(`http://localhost:9999/roombookings/${id}/approve`);
+      const res = await axios.post(
+        `http://localhost:9999/roombookings/${id}/approve`
+      );
       if (res.data.success) {
         const updated = res.data.data;
         setBookingRequests((prev) =>
@@ -34,12 +37,12 @@ export const RoomBookingProvider = ({ children }) => {
 
   const cancelBookingRequest = async (id) => {
     try {
-      const res = await axios.post(`http://localhost:9999/roombookings/${id}/reject`);
+      const res = await axios.post(
+        `http://localhost:9999/roombookings/${id}/reject`
+      );
       if (res.data.success) {
         setBookingRequests((prev) =>
-          prev.map((b) =>
-            b._id === id ? { ...b, status: "CANCELLED" } : b
-          )
+          prev.map((b) => (b._id === id ? { ...b, status: "CANCELLED" } : b))
         );
       } else {
         alert(res.data.message || "Không thể hủy yêu cầu");
@@ -50,8 +53,25 @@ export const RoomBookingProvider = ({ children }) => {
     }
   };
 
+  const getBookingHistory = async () => {
+    try {
+      const userId = localStorage.getItem("id");
+
+      const response = await axios.get(
+        `http://localhost:9999/roombookings/${userId}/user`
+      );
+
+      console.log("HIS: " + response.data);
+
+      setBookingHistory(response.data);
+    } catch (err) {
+      console.error("Lỗi khi lấy danh sách booking history:", err);
+    }
+  };
+
   useEffect(() => {
     getBookingRequests();
+    getBookingHistory();
   }, []);
 
   return (
@@ -61,6 +81,9 @@ export const RoomBookingProvider = ({ children }) => {
         approveBookingRequest,
         cancelBookingRequest,
         getBookingRequests,
+        getBookingHistory,
+        bookingHistory,
+        setBookingRequests
       }}
     >
       {children}

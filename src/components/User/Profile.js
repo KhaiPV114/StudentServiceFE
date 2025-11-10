@@ -1,24 +1,61 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Form, Button, Card, Row, Col } from "react-bootstrap";
 
 const Profile = () => {
-  const [user, setUser] = useState({
-    fullName: "Nguyễn Văn A",
-    email: "student@university.edu",
-    phone: "0123456789",
-    major: "Công nghệ thông tin",
-  });
-
+  const [user, setUser] = useState();
   const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+  const [newName, setName] = useState("");
+  const [newEmail, setEmail] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUser((prev) => ({ ...prev, [name]: value }));
+  const userId = localStorage.getItem("id");
+
+  const getUserById = async () => {
+    try {
+      const response = await axios.get(`http://localhost:9999/users/${userId}`);
+      setUser(response.data);
+      setName(response.data.name);
+      setEmail(response.data.email);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const updateProfile = async () => {
+  try {
+    const response = await axios.put(`http://localhost:9999/users/${userId}`, {
+      name: newName,
+      email: newEmail,
+    });
+
+    alert("Cập nhật thông tin thành công!");
+    getUserById();
+  } catch (error) {
+    console.error("Lỗi cập nhật:", error);
+    alert("Cập nhật thất bại!");
+  }
+};
+
+// const updatePassword = async () => {
+//   try {
+//     const response = await axios.put(`http://localhost:9999/users/${userId}`, {
+//       name: newName,
+//       email: newEmail,
+//     });
+//     alert("Cập nhật thông tin thành công!");
+//   } catch (error) {
+    
+//   }
+// }
+
+
+  useEffect(() => {
+    getUserById();
+  }, []);
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -72,8 +109,8 @@ const Profile = () => {
                 <Form.Control
                   type="text"
                   name="fullName"
-                  value={user.fullName}
-                  onChange={handleChange}
+                  value={newName}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </Form.Group>
             </Col>
@@ -84,14 +121,14 @@ const Profile = () => {
                 <Form.Control
                   type="email"
                   name="email"
-                  value={user.email}
-                  onChange={handleChange}
+                  value={newEmail}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </Form.Group>
             </Col>
           </Row>
 
-          <Row>
+          {/* <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Số điện thoại</Form.Label>
@@ -119,11 +156,11 @@ const Profile = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
-          </Row>
+          </Row> */}
 
           <Button
             variant="primary"
-            onClick={handleUpdateInfo}
+            onClick={updateProfile}
             style={{ marginTop: "5px" }}
           >
             Cập nhật thông tin

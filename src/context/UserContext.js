@@ -33,11 +33,23 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const updateProfile = async (name, email, id) => {
+    try {
+       const response = await axios.post(
+        `http://localhost:9999/users/${id}`,
+        { name, email  }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
   useEffect(() => {
     getAllUsers();
   }, []);
 
-  const value = { users, getAllUsers, setUsers, page, setPage, totalPages, totalUser };
+  const value = { users, getAllUsers, setUsers, page, setPage, totalPages, totalUser, updateProfile };
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
