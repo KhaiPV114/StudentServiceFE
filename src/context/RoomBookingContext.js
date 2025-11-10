@@ -38,7 +38,7 @@ export const RoomBookingProvider = ({ children }) => {
   const cancelBookingRequest = async (id) => {
     try {
       const res = await axios.post(
-        `http://localhost:9999/roombookings/${id}/reject`
+        `http://localhost:9999/roombookings/${id}/cancel`
       );
       if (res.data.success) {
         setBookingRequests((prev) =>

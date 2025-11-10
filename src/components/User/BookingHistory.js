@@ -5,31 +5,16 @@ import RoomBookingContext from "../../context/RoomBookingContext";
 import axios from "axios";
 
 const BookingHistory = () => {
-  const { bookingHistory, setBookingRequests } = useContext(RoomBookingContext);
+  const { bookingHistory, setBookingRequests, cancelBookingRequest } = useContext(RoomBookingContext);
 
-  const cancelBooking = async (id) => {
-        try {
-          const res = await axios.post(
-            `http://localhost:9999/roombookings/${id}/reject`
-          );
-          if (res.data.success) {
-            setBookingRequests((prev) =>
-              prev.map((b) =>
-                b._id === id ? { ...b, status: "CANCELLED" } : b
-              )
-            );
-          } else {
-            alert(res.data.message || "Không thể hủy yêu cầu");
-          }
-        } catch (err) {
-          console.error("Lỗi hủy booking:", err);
-          alert(err.response?.data?.message || "Lỗi server khi hủy booking");
-        }
-      };
+
 
   const handleCancel = (id) => {
+
+    console.log("BOOK ID: " + id);
+    
     if (window.confirm("Bạn có chắc muốn hủy yêu cầu này không?")) {
-      cancelBooking(id)
+      cancelBookingRequest(id)
     }
   };
 
@@ -85,7 +70,7 @@ const BookingHistory = () => {
                     <Button
                       variant="outline-danger"
                       size="sm"
-                      onClick={() => handleCancel(b.id)}
+                      onClick={() => handleCancel(b._id)}
                     >
                       <FaTrashAlt className="me-1" /> Hủy
                     </Button>
